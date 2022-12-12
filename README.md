@@ -9,8 +9,8 @@ Your database will be PSQL, and you will interact with it using [node-postgres](
 
 ## Creating the .env files
 
-1. Create an .env.test and .env.development file within the root project directory.
+1. Create an .env.test and .env.development file within the project directory.
 
-2. Insert `PGDATABASE=<insert_database_name>` into each of the .env files with the corresponding database name for the environment.
+2. Insert `PGDATABASE=nc_news_test` into the .env.test file
 
-3. Database names are stored in the setup.sql file within the db directory.
+3. Insert `PGDATABASE=nc_news` into the .env.development file

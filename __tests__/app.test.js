@@ -13,7 +13,7 @@ describe("404 path not found", () => {
         .get("/api/pathnotvalid")
         .expect(404)
         .then(({ body }) => {
-          expect(body).toEqual({ message: "path not found" });
+          expect(body).toEqual({ msg: "path not found" });
         });
     });
 });

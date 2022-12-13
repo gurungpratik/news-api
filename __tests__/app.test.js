@@ -9,13 +9,13 @@ beforeEach(() => seed(testData));
 
 describe("404 path not found", () => {
   test("should return 404 error for invalid paths", () => {
-      return request(app)
-        .get("/api/pathnotvalid")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body).toEqual({ msg: "path not found" });
-        });
-    });
+    return request(app)
+      .get("/api/pathnotvalid")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).toEqual({ msg: "path not found" });
+      });
+  });
 });
 
 describe("GET /api/topics", () => {
@@ -38,3 +38,36 @@ describe("GET /api/topics", () => {
   });
 });
 
+describe("GET /api/articles", () => {
+  test("status 200: should return array of articles with each object containing keys of author, title, article_id, topic, created_at, votes, comment_count", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeInstanceOf(Object);
+        expect(articles).toHaveLength(12);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+
+  test("status 200: should return articles sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});

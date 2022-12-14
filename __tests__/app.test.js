@@ -71,3 +71,54 @@ describe("GET /api/articles", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id", () => {
+  test("status 200: should return the article corresponding to the article id", () => {
+    const ARTICLE_ID = 1;
+    return request(app)
+      .get(`/api/articles/${ARTICLE_ID}`)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual({
+          article_id: 1,
+          author: "butter_bridge",
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 100,
+        });
+      });
+  });
+
+  test("status 404: article id is valid format but does not exist", () => {
+    const ARTICLE_ID = 1000;
+    return request(app)
+      .get(`/api/articles/${ARTICLE_ID}`)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("article 1000 does not exist")
+      });
+  });
+
+  test("status 400: should return error message when article_id is of an incorrect data type (string)", () => {
+    const ARTICLE_ID = "one";
+    return request(app)
+      .get(`/api/articles/${ARTICLE_ID}`)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request")
+      });
+  });
+
+test("status 400: should return error message when article_id is of an incorrect data type (negative int)", () => {
+    const ARTICLE_ID = -1;
+    return request(app)
+      .get(`/api/articles/${ARTICLE_ID}`)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request")
+      });
+  });
+  
+});

@@ -81,14 +81,14 @@ describe("GET /api/articles/:article_id", () => {
       .then(({ body: { article } }) => {
         expect(article).toEqual(
           expect.objectContaining({
-          article_id: expect.any(Number),
-          author: expect.any(String),
-          title: expect.any(String),
-          topic: expect.any(String),
-          body: expect.any(String),
-          created_at: expect.any(String),
-          votes: expect.any(Number),
-        })
+            article_id: expect.any(Number),
+            author: expect.any(String),
+            title: expect.any(String),
+            topic: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          })
         );
       });
   });
@@ -99,7 +99,7 @@ describe("GET /api/articles/:article_id", () => {
       .get(`/api/articles/${ARTICLE_ID}`)
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("article 1000 does not exist")
+        expect(msg).toBe("article 1000 does not exist");
       });
   });
 
@@ -109,18 +109,80 @@ describe("GET /api/articles/:article_id", () => {
       .get(`/api/articles/${ARTICLE_ID}`)
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("bad request")
+        expect(msg).toBe("bad request");
       });
   });
 
-test("status 400: should return error message when article_id is of an incorrect data type (negative int)", () => {
+  test("status 400: should return error message when article_id is of an incorrect data type (negative int)", () => {
     const ARTICLE_ID = -1;
     return request(app)
       .get(`/api/articles/${ARTICLE_ID}`)
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("bad request")
+        expect(msg).toBe("bad request");
       });
   });
-  
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("status 200: should return the comments for the given article id", () => {
+    const ARTICLE_ID = 1;
+    return request(app)
+      .get(`/api/articles/${ARTICLE_ID}/comments`)
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(11);
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+
+  test("status 200: should return an empty array when given an article that exists but has no comments", () => {
+    const ARTICLE_ID = 12;
+    return request(app)
+      .get(`/api/articles/${ARTICLE_ID}/comments`)
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([]);
+      });
+  });
+
+  test("status 404: article id is valid format but does not exist", () => {
+    const ARTICLE_ID = 1000;
+    return request(app)
+      .get(`/api/articles/${ARTICLE_ID}/comments`)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("article 1000 does not exist");
+      });
+  });
+
+  test("status 400: should return error message when article_id is of an incorrect data type (string)", () => {
+    const ARTICLE_ID = "one";
+    return request(app)
+      .get(`/api/articles/${ARTICLE_ID}/comments`)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+
+  test("status 400: should return error message when article_id is of an incorrect data type (negative int)", () => {
+    const ARTICLE_ID = -1;
+    return request(app)
+      .get(`/api/articles/${ARTICLE_ID}/comments`)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
 });

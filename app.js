@@ -10,7 +10,6 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 
-
 app.all("*", invalidPath);
 app.use(psql400Error);
 app.use(customError);

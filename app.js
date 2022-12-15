@@ -1,20 +1,20 @@
 const express = require("express");
 const app = express();
 
-const { getTopics } = require("../be-nc-news/controllers/topics.controller");
+const { getTopics } = require("./controllers/topics.controller");
 
 const {
   getArticles,
   getArticleById,
   getCommentsByArticle,
-} = require("../be-nc-news/controllers/articles.controller");
+} = require("./controllers/articles.controller");
 
 const {
   invalidPath,
   psql400Error,
   customError,
   serverError,
-} = require("../be-nc-news/controllers/errors.controller");
+} = require("./controllers/errors.controller");
 
 app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);

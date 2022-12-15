@@ -146,6 +146,16 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 
+  test("status 200: should return comments sorted by created_at in descending order", () => {
+    const ARTICLE_ID = 1;
+    return request(app)
+      .get(`/api/articles/${ARTICLE_ID}/comments`)
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
   test("status 200: should return an empty array when given an article that exists but has no comments", () => {
     const ARTICLE_ID = 12;
     return request(app)

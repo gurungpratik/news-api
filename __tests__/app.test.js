@@ -196,3 +196,37 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("PATCH /api/articles/:article_id", () => {
+
+  test.only("status 200: should return the updated article", () => {
+    const ARTICLE_ID = 1;
+    const update = { inc_votes: 5 };
+    return request(app)
+      .patch(`/api/articles/${ARTICLE_ID}`)
+      .send(update).expect(200)
+      .then(({ body: { updatedArticle } }) => {
+        expect(updatedArticle).toEqual(
+          expect.objectContaining({
+            article_id: expect.any(Number),
+            author: expect.any(String),
+            title: expect.any(String),
+            topic: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          })
+        );
+      });
+  });
+
+  // test("status 200: should increase the given articles votes by inc_votes");
+  // test("status 200: should decrease the given article votes by inc_votes");
+  // test("status 400: request body object contains inc_votes key with no value");
+  // test("status 400: request body object does not contain inc_votes key");
+  // test("status 400: article_id an incorrect data type (string)");
+  // test("status 400: article_id an incorrect data type (negative int)");
+  // test("status 404: article_id is correct format but does not exist");
+  // test("status 400: inc_votes is an incorrect data type (string)");
+  // test("status 400: inc_votes is an incorrect data type (float)");
+});

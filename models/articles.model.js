@@ -65,4 +65,30 @@ const selectCommentsByArticle = (article_id) => {
     });
 };
 
-module.exports = { selectArticles, selectArticleById, selectCommentsByArticle };
+const updateArticleById = (article_id, inc_votes) => {
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: `bad request`,
+    });
+  }
+  console.log("here model");
+  const query = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING*;`;
+
+  return db.query(query, [inc_votes, article_id]).then(({ rows, rowCount }) => {
+    if (rowCount === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: `not found`,
+      });
+    }
+    return rows[0];
+  });
+};
+
+module.exports = {
+  selectArticles,
+  selectArticleById,
+  selectCommentsByArticle,
+  updateArticleById,
+};

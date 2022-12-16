@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+app.use(express.json());
 
 const { getTopics } = require("./controllers/topics.controller");
 
@@ -7,6 +8,7 @@ const {
   getArticles,
   getArticleById,
   getCommentsByArticle,
+  patchArticleById
 } = require("./controllers/articles.controller");
 
 const {
@@ -20,6 +22,8 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticle);
+console.log("app");
+app.patch("/api/articles/:article_id", patchArticleById);
 
 app.all("*", invalidPath);
 app.use(psql400Error);

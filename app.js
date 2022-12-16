@@ -9,6 +9,7 @@ const {
   getArticleById,
   getCommentsByArticle,
   patchArticleById,
+  postCommentToArticle
 } = require("./controllers/articles.controller");
 
 const {
@@ -23,6 +24,7 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticle);
 app.patch("/api/articles/:article_id", patchArticleById);
+app.post("/api/articles/:article_id/comments", postCommentToArticle);
 
 app.all("*", invalidPath);
 app.use(psql400Error);

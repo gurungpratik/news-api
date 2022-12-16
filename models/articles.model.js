@@ -65,6 +65,40 @@ const selectCommentsByArticle = (article_id) => {
     });
 };
 
+const insertArticleComment = async (article_id, comment) => {
+  const { username, body } = comment;
+
+  if (!username || !body || parseInt(article_id) < 1) {
+    return Promise.reject({
+      status: 400,
+      msg: "bad request",
+    });
+  }
+
+  const query1 = `SELECT * FROM articles WHERE article_id = $1;`;
+  const result1 = await db.query(query1, [article_id]);
+  if (result1.rowCount === 0) {
+    return Promise.reject({
+      status: 404,
+      msg: `article ${article_id} does not exist`,
+    });
+  }
+
+  const query2 = `SELECT * FROM users WHERE username = $1;`;
+  const result2 = await db.query(query2, [username]);
+  if (result2.rowCount === 0) {
+    return Promise.reject({
+      status: 404,
+      msg: `username ${username} does not exist`,
+    });
+  }
+
+  const query3 = `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`;
+  return db.query(query3, [article_id, username, body]).then(({ rows }) => {
+    return rows[0];
+  });
+};
+
 const updateArticleById = (article_id, inc_votes) => {
   if (!inc_votes) {
     return Promise.reject({
@@ -89,5 +123,6 @@ module.exports = {
   selectArticles,
   selectArticleById,
   selectCommentsByArticle,
+  insertArticleComment,
   updateArticleById,
 };

@@ -72,7 +72,6 @@ const updateArticleById = (article_id, inc_votes) => {
       msg: `bad request`,
     });
   }
-  console.log("here model");
   const query = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING*;`;
 
   return db.query(query, [inc_votes, article_id]).then(({ rows, rowCount }) => {

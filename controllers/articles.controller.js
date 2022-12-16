@@ -38,7 +38,6 @@ const getCommentsByArticle = (req, res, next) => {
 };
 
 const patchArticleById = (req, res, next) => {
-  console.log("in the controller");
 
   const { article_id } = req.params;
   const { inc_votes } = req.body;

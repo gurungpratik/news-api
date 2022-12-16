@@ -219,14 +219,4 @@ describe("PATCH /api/articles/:article_id", () => {
         );
       });
   });
-
-  // test("status 200: should increase the given articles votes by inc_votes");
-  // test("status 200: should decrease the given article votes by inc_votes");
-  // test("status 400: request body object contains inc_votes key with no value");
-  // test("status 400: request body object does not contain inc_votes key");
-  // test("status 400: article_id an incorrect data type (string)");
-  // test("status 400: article_id an incorrect data type (negative int)");
-  // test("status 404: article_id is correct format but does not exist");
-  // test("status 400: inc_votes is an incorrect data type (string)");
-  // test("status 400: inc_votes is an incorrect data type (float)");
 });

@@ -196,3 +196,150 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("status 201: should return the comment when posting a new comment", () => {
+    const ARTICLE_ID = 1;
+    const comment = {
+      username: "butter_bridge",
+      body: "lorem ipsum",
+    };
+
+    return request(app)
+      .post(`/api/articles/${ARTICLE_ID}/comments`)
+      .send(comment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+            author: expect.any(String),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+
+  test("status 201: should insert the given comment into the comments table", () => {
+    const ARTICLE_ID = 2;
+    const comment = {
+      username: "butter_bridge",
+      body: "lorem ipsum2",
+    };
+
+    return request(app)
+      .post(`/api/articles/${ARTICLE_ID}/comments`)
+      .send(comment)
+      .expect(201)
+      .then(() => {
+        return db
+          .query(
+            `SELECT * FROM comments
+          WHERE comment_id = 19`
+          )
+          .then(({ rows }) => {
+            expect(rows[0]).toEqual(
+              expect.objectContaining({
+                comment_id: expect.any(Number),
+                body: expect.any(String),
+                article_id: expect.any(Number),
+                author: expect.any(String),
+                votes: expect.any(Number),
+                created_at: expect.any(Date),
+              })
+            );
+          });
+      });
+  });
+
+  test("status 404: should return article not found when given a valid format article_id that does not exist", () => {
+    const ARTICLE_ID = 1000;
+    const comment = {
+      username: "butter_bridge",
+      body: "lorem ipsum2",
+    };
+      return request(app)
+        .post(`/api/articles/${ARTICLE_ID}/comments`)
+        .expect(404)
+        .send(comment)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe(`article ${ARTICLE_ID} does not exist`);
+    });
+  })
+
+  test("status 400: should return bad request when given comment is missing username or body", () => {
+    const ARTICLE_ID = 1;
+    const comment = {
+      username: "butter_bridge",
+    };
+      return request(app)
+        .post(`/api/articles/${ARTICLE_ID}/comments`)
+        .send(comment)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe(`bad request`);
+    });
+  })
+
+  test("status 400: should return bad request when article_id of invalid data type (string)", () => {
+    const ARTICLE_ID = "one";
+    const comment = {
+      username: "butter_bridge",
+    };
+      return request(app)
+        .post(`/api/articles/${ARTICLE_ID}/comments`)
+        .send(comment)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe(`bad request`);
+    });
+  })
+
+  test("status 400: should return bad request when article_id of invalid data type (negative int)", () => {
+    const ARTICLE_ID = -1;
+    const comment = {
+      username: "butter_bridge",
+    };
+      return request(app)
+        .post(`/api/articles/${ARTICLE_ID}/comments`)
+        .send(comment)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe(`bad request`);
+    });
+  })
+
+  test("status 400: should return bad request when given comment object has more than two keys", () => {
+    const ARTICLE_ID = -1;
+    const comment = {
+      username: "butter_bridge",
+      body: "lorem ipsum",
+      extra: "extra"
+    };
+      return request(app)
+        .post(`/api/articles/${ARTICLE_ID}/comments`)
+        .send(comment)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe(`bad request`);
+    });
+  })
+
+  test("status 404: should return not found when given comment contains a username that does not exist", () => {
+    const ARTICLE_ID = 1;
+    const comment = {
+      username: "nonExistent",
+      body: "lorem ipsum",
+    };
+      return request(app)
+        .post(`/api/articles/${ARTICLE_ID}/comments`)
+        .send(comment)
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe(`username ${comment.username} does not exist`);
+    });
+  })
+});

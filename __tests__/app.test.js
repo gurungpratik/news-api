@@ -198,13 +198,13 @@ describe("GET /api/articles/:article_id/comments", () => {
 });
 
 describe("PATCH /api/articles/:article_id", () => {
-
   test("status 200: should return the updated article", () => {
     const ARTICLE_ID = 1;
     const update = { inc_votes: 5 };
     return request(app)
       .patch(`/api/articles/${ARTICLE_ID}`)
-      .send(update).expect(200)
+      .send(update)
+      .expect(200)
       .then(({ body: { updatedArticle } }) => {
         expect(updatedArticle).toEqual(
           expect.objectContaining({
@@ -217,6 +217,109 @@ describe("PATCH /api/articles/:article_id", () => {
             votes: expect.any(Number),
           })
         );
+      });
+  });
+
+  test("status 200: increases articles votes by the given inc_votes", () => {
+    const ARTICLE_ID = 1;
+    const update = { inc_votes: 5 };
+    return request(app)
+      .patch(`/api/articles/${ARTICLE_ID}`)
+      .send(update)
+      .expect(200)
+      .then(({ body: { updatedArticle } }) => {
+        expect(updatedArticle).toEqual(
+          expect.objectContaining({
+            article_id: expect.any(Number),
+            author: expect.any(String),
+            title: expect.any(String),
+            topic: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: 105,
+          })
+        );
+      });
+  });
+  test("status 200: decreases articles votes by the given inc_votes", () => {
+    const ARTICLE_ID = 1;
+    const update = { inc_votes: -5 };
+    return request(app)
+      .patch(`/api/articles/${ARTICLE_ID}`)
+      .send(update)
+      .expect(200)
+      .then(({ body: { updatedArticle } }) => {
+        expect(updatedArticle).toEqual(
+          expect.objectContaining({
+            article_id: expect.any(Number),
+            author: expect.any(String),
+            title: expect.any(String),
+            topic: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: 95,
+          })
+        );
+      });
+  });
+
+  test("status 400: request object body does not contain the inc_vote key", () => {
+    const ARTICLE_ID = 1;
+    const update = { not_inc: 5 };
+    return request(app)
+      .patch(`/api/articles/${ARTICLE_ID}`)
+      .send(update)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+
+  test("status 400: request object body is empty", () => {
+    const ARTICLE_ID = 1;
+    const update = {};
+    return request(app)
+      .patch(`/api/articles/${ARTICLE_ID}`)
+      .send(update)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+
+  test("status 404: article_id is valid format but does not exist", () => {
+    const ARTICLE_ID = 1000;
+    const update = { inc_votes: 5 };
+    return request(app)
+      .patch(`/api/articles/${ARTICLE_ID}`)
+      .send(update)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("article does not exist");
+      });
+  });
+
+  test("status 400: given article_id is incorrect data type (string)", () => {
+    const ARTICLE_ID = "one";
+    const update = { inc_votes: 5 };
+    return request(app)
+      .patch(`/api/articles/${ARTICLE_ID}`)
+      .send(update)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+
+  test("status 400: given inc_votes is incorrect data type (string)", () => {
+    const ARTICLE_ID = 1;
+    const update = { inc_votes: "five" };
+    return request(app)
+      .patch(`/api/articles/${ARTICLE_ID}`)
+      .send(update)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
       });
   });
 });

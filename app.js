@@ -8,7 +8,7 @@ const {
   getArticles,
   getArticleById,
   getCommentsByArticle,
-  patchArticleById
+  patchArticleById,
 } = require("./controllers/articles.controller");
 
 const {

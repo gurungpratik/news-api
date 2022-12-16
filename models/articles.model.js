@@ -78,7 +78,7 @@ const updateArticleById = (article_id, inc_votes) => {
     if (rowCount === 0) {
       return Promise.reject({
         status: 404,
-        msg: `not found`,
+        msg: `article does not exist`,
       });
     }
     return rows[0];

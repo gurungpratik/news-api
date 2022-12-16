@@ -199,7 +199,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 
 describe("PATCH /api/articles/:article_id", () => {
 
-  test.only("status 200: should return the updated article", () => {
+  test("status 200: should return the updated article", () => {
     const ARTICLE_ID = 1;
     const update = { inc_votes: 5 };
     return request(app)

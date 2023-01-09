@@ -1,5 +1,8 @@
+const cors = require("cors");
 const express = require("express");
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
 const { getTopics } = require("./controllers/topics.controller");
@@ -9,12 +12,10 @@ const {
   getArticleById,
   getCommentsByArticle,
   patchArticleById,
-  postCommentToArticle
+  postCommentToArticle,
 } = require("./controllers/articles.controller");
 
-const {
-  getUsers
-} = require("./controllers/users.controller");
+const { getUsers } = require("./controllers/users.controller");
 
 const {
   invalidPath,

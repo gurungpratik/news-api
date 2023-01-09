@@ -1,12 +1,50 @@
 const db = require("../db/connection");
 
-const selectArticles = () => {
+const selectArticles = async (
+  topic,
+  sort_by = "created_at",
+  order = "desc"
+) => {
+  if (topic) {
+    const query1 = `SELECT * FROM topics WHERE slug = $1`;
+    const { rowCount } = await db.query(query1, [topic])
+    if (rowCount === 0) {
+      return Promise.reject({ status: 404, msg: `${topic} does not exist` });
+    }
+  }
+
+  const sortByQueries = [
+    "article_id",
+    "author",
+    "title",
+    "topic",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+  if (!sortByQueries.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
+  const orderQueries = ["asc", "desc"];
+  if (!orderQueries.includes(order)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
+  let topicQuery = [];
   let queryString = `SELECT articles.article_id, articles.author,  articles.title, articles.topic, articles.created_at, articles.votes, COUNT(comments.body) AS comment_count
   FROM articles
-  LEFT JOIN comments ON comments.article_id = articles.article_id
-  GROUP BY articles.article_id
-  ORDER BY created_at DESC;`;
-  return db.query(queryString).then((result) => {
+  LEFT JOIN comments ON comments.article_id = articles.article_id `;
+
+  if (topic !== undefined) {
+    queryString += `WHERE articles.topic = $1`;
+    topicQuery.push(topic);
+  }
+
+  queryString += `GROUP BY articles.article_id
+  ORDER BY ${sort_by} ${order};`;
+
+  return db.query(queryString, topicQuery).then((result) => {
     return result.rows;
   });
 };
